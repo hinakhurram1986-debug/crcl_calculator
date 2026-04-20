@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrCl & Meropenem Calculator</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .btn-group { margin-top: 25px; display: flex; gap: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .calc-btn { background: #007bff; color: white; }
+        .clear-btn { background: #6c757d; color: white; }
+        #result-box { margin-top: 25px; padding: 15px; border-radius: 8px; display: none; }
+        .normal { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
 
+<div class="card">
+    <h2>Dose Calculator</h2>
+    
+    <label>Age (Years)</label>
+    <input type="number" id="age" placeholder="e.g. 65">
+
+    <label>Weight (kg)</label>
+    <input type="number" id="weight" placeholder="e.g. 70">
+
+    <label>Serum Creatinine (mg/dL)</label>
+    <input type="number" step="0.01" id="scr" placeholder="e.g. 1.2">
+
+    <label>Gender</label>
+    <select id="gender">
+        <option value="1">Male</option>
+        <option value="0.85">Female</option>
+    </select>
+
+    <div class="btn-group">
+        <button class="calc-btn" onclick="calculate()">Calculate</button>
+        <button class="clear-btn" onclick="resetForm()">Clear</button>
+    </div>
+
+    <div id="result-box">
+        <div id="crcl-output" style="font-size: 18px; font-weight: bold;"></div>
+        <hr>
+        <div id="dose-output" style="margin-top: 10px;"></div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const age = parseFloat(document.getElementById('age').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const scr = parseFloat(document.getElementById('scr').value);
+    const gender = parseFloat(document.getElementById('gender').value);
+
+    if (!age || !weight || !scr) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    // Cockcroft-Gault Equation
+    let crcl = ((140 - age) * weight) / (72 * scr);
+    crcl = crcl * gender;
+
+    const resultBox = document.getElementById('result-box');
+    const crclOut = document.getElementById('crcl-output');
+    const doseOut = document.getElementById('dose-output');
+
+    resultBox.style.display = "block";
+    crclOut.innerText = `CrCl: ${crcl.toFixed(2)} mL/min`;
+
+    // Meropenem Dosing Logic
+    if (crcl > 50) {
+        resultBox.className = "normal";
+        doseOut.innerHTML = "<b>Dose:</b> 1g every 8 hours";
+    } else if (crcl >= 26) {
+        resultBox.className = "warning";
+        doseOut.innerHTML = "<b>Dose:</b> 1g every 12 hours";
+    } else if (crcl >= 10) {
+        resultBox.className = "danger";
+        doseOut.innerHTML = "<b>Dose:</b> 500mg every 12 hours";
+    } else {
+        resultBox.className = "danger";
+        doseOut.innerHTML = "<b>Dose:</b> 500mg every 24 hours";
+    }
+}
+
+function resetForm() {
+    document.getElementById('age').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('scr').value = '';
+    document.getElementById('result-box').style.display = "none";
+}
+</script>
+
+</body>
+</html>
