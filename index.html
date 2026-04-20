@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrCl & Meropenem Calculator</title>
+    <title>Creatinine Clearance Calculator</title>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        .btn-group { margin-top: 25px; display: flex; gap: 10px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        .calc-btn { background: #007bff; color: white; }
-        .clear-btn { background: #6c757d; color: white; }
-        #result-box { margin-top: 25px; padding: 15px; border-radius: 8px; display: none; }
-        .normal { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; position: relative; }
+        h1 { color: #1a73e8; text-align: center; font-size: 24px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #444; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border 0.3s; }
+        input:focus { border-color: #1a73e8; outline: none; }
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: opacity 0.2s; }
+        .calc-btn { background: #1a73e8; color: white; }
+        .clear-btn { background: #ea4335; color: white; }
+        button:hover { opacity: 0.9; }
+        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; text-align: center; }
+        .normal { background: #e6f4ea; color: #1e8e3e; border: 1px solid #34a853; }
+        .warning { background: #fef7e0; color: #b06000; border: 1px solid #fbbc04; }
+        .danger { background: #fce8e6; color: #d93025; border: 1px solid #ea4335; }
+        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Dose Calculator</h2>
+    <h1>Creatinine Clearance Calculator</h1>
     
     <label>Age (Years)</label>
-    <input type="number" id="age" placeholder="e.g. 65">
+    <input type="number" id="age" placeholder="Enter age">
 
     <label>Weight (kg)</label>
-    <input type="number" id="weight" placeholder="e.g. 70">
+    <input type="number" id="weight" placeholder="Enter weight in kg">
 
     <label>Serum Creatinine (mg/dL)</label>
-    <input type="number" step="0.01" id="scr" placeholder="e.g. 1.2">
+    <input type="number" step="0.01" id="scr" placeholder="e.g. 1.1">
 
     <label>Gender</label>
     <select id="gender">
@@ -46,9 +49,12 @@
     </div>
 
     <div id="result-box">
-        <div id="crcl-output" style="font-size: 18px; font-weight: bold;"></div>
-        <hr>
-        <div id="dose-output" style="margin-top: 10px;"></div>
+        <div id="crcl-output" style="font-size: 20px; font-weight: bold; margin-bottom: 8px;"></div>
+        <div id="dose-output" style="font-size: 16px; border-top: 1px solid rgba(0,0,0,0.1); pt: 10px; margin-top: 10px; padding-top: 10px;"></div>
+    </div>
+
+    <div class="footer">
+        Made by Clinical Pharmacist Hina Khurram Ghaznavi
     </div>
 </div>
 
@@ -60,7 +66,7 @@ function calculate() {
     const gender = parseFloat(document.getElementById('gender').value);
 
     if (!age || !weight || !scr) {
-        alert("Please fill all fields");
+        alert("Please enter all patient values.");
         return;
     }
 
@@ -75,20 +81,22 @@ function calculate() {
     resultBox.style.display = "block";
     crclOut.innerText = `CrCl: ${crcl.toFixed(2)} mL/min`;
 
-    // Meropenem Dosing Logic
+    let doseText = "";
     if (crcl > 50) {
         resultBox.className = "normal";
-        doseOut.innerHTML = "<b>Dose:</b> 1g every 8 hours";
+        doseText = "1g every 8 hours";
     } else if (crcl >= 26) {
         resultBox.className = "warning";
-        doseOut.innerHTML = "<b>Dose:</b> 1g every 12 hours";
+        doseText = "1g every 12 hours";
     } else if (crcl >= 10) {
         resultBox.className = "danger";
-        doseOut.innerHTML = "<b>Dose:</b> 500mg every 12 hours";
+        doseText = "500mg every 12 hours";
     } else {
         resultBox.className = "danger";
-        doseOut.innerHTML = "<b>Dose:</b> 500mg every 24 hours";
+        doseText = "500mg every 24 hours";
     }
+
+    doseOut.innerHTML = `<b>Meropenem Dosage:</b><br>${doseText}`;
 }
 
 function resetForm() {
