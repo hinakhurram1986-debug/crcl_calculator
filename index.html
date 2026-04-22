@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creatinine Clearance Calculator</title>
+    <title>Meropenem Dosing & CrCl Calculator</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; position: relative; }
-        h1 { color: #1a73e8; text-align: center; font-size: 24px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
+        h1 { color: #1a73e8; text-align: center; font-size: 22px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
         label { display: block; margin-top: 15px; font-weight: 600; color: #444; font-size: 14px; }
         input, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border 0.3s; }
         input:focus { border-color: #1a73e8; outline: none; }
@@ -16,17 +16,21 @@
         .calc-btn { background: #1a73e8; color: white; }
         .clear-btn { background: #ea4335; color: white; }
         button:hover { opacity: 0.9; }
-        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; text-align: center; }
+        
+        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; text-align: left; }
         .normal { background: #e6f4ea; color: #1e8e3e; border: 1px solid #34a853; }
         .warning { background: #fef7e0; color: #b06000; border: 1px solid #fbbc04; }
         .danger { background: #fce8e6; color: #d93025; border: 1px solid #ea4335; }
-        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; font-style: italic; }
+        
+        .dose-heading { font-weight: bold; text-decoration: underline; margin-bottom: 5px; display: block; color: inherit; }
+        .stability-info { margin-top: 20px; font-size: 13px; color: #555; line-height: 1.6; border-top: 1px solid #ddd; padding-top: 15px; }
+        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>Creatinine Clearance Calculator</h1>
+    <h1>Meropenem Dosing & CrCl</h1>
     
     <label>Age (Years)</label>
     <input type="number" id="age" placeholder="Enter age">
@@ -49,8 +53,21 @@
     </div>
 
     <div id="result-box">
-        <div id="crcl-output" style="font-size: 20px; font-weight: bold; margin-bottom: 8px;"></div>
-        <div id="dose-output" style="font-size: 16px; border-top: 1px solid rgba(0,0,0,0.1); pt: 10px; margin-top: 10px; padding-top: 10px;"></div>
+        <div id="crcl-output" style="font-size: 20px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+        
+        <div id="dose-details">
+            <span class="dose-heading">Usual Dosage:</span>
+            <div id="usual-dose-text"></div>
+            <br>
+            <span class="dose-heading">Meningitis / Acute Pulmonary Exacerbation:</span>
+            <div id="special-dose-text"></div>
+        </div>
+
+        <div class="stability-info">
+            <strong>Dialysis:</strong> 80% dialyzable<br>
+            <strong>Stability (Reconstituted):</strong> 12 hours at 2 - 8 °C<br>
+            <strong>Stability (Diluted):</strong> 12 hours at 2 - 8 °C
+        </div>
     </div>
 
     <div class="footer">
@@ -76,27 +93,35 @@ function calculate() {
 
     const resultBox = document.getElementById('result-box');
     const crclOut = document.getElementById('crcl-output');
-    const doseOut = document.getElementById('dose-output');
+    const usualDoseOut = document.getElementById('usual-dose-text');
+    const specialDoseOut = document.getElementById('special-dose-text');
 
     resultBox.style.display = "block";
-    crclOut.innerText = `CrCl: ${crcl.toFixed(2)} mL/min`;
+    crclOut.innerText = `Calculated CrCl: ${crcl.toFixed(2)} mL/min`;
 
-    let doseText = "";
+    let usualText = "";
+    let specialText = "";
+
     if (crcl > 50) {
         resultBox.className = "normal";
-        doseText = "1g every 8 hours";
-    } else if (crcl >= 26) {
+        usualText = "1g TID (Every 8 hours) OR 500mg QID (Every 6 hours)";
+        specialText = "2g TID (Every 8 hours)";
+    } else if (crcl > 25) {
         resultBox.className = "warning";
-        doseText = "1g every 12 hours";
+        usualText = "1g BD (Every 12 hours)";
+        specialText = "2g BD (Every 12 hours)";
     } else if (crcl >= 10) {
         resultBox.className = "danger";
-        doseText = "500mg every 12 hours";
+        usualText = "500mg BD (Every 12 hours)";
+        specialText = "1g BD (Every 12 hours)";
     } else {
         resultBox.className = "danger";
-        doseText = "500mg every 24 hours";
+        usualText = "500mg OD (Every 24 hours)";
+        specialText = "1g OD (Every 24 hours) OR 500mg BD (Every 12 hours)";
     }
 
-    doseOut.innerHTML = `<b>Meropenem Dosage:</b><br>${doseText}`;
+    usualDoseOut.innerText = usualText;
+    specialDoseOut.innerText = specialText;
 }
 
 function resetForm() {
