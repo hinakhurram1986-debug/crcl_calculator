@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meropenem Dosing & CrCl Calculator</title>
+    <title>Meropenem Dosing & Renal Calculator</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
@@ -30,7 +30,7 @@
 <body>
 
 <div class="card">
-    <h1>Meropenem Dosing & CrCl</h1>
+    <h1>Meropenem Dosing & Renal Calculator</h1>
     
     <label>Age (Years)</label>
     <input type="number" id="age" placeholder="Enter age">
@@ -53,7 +53,7 @@
     </div>
 
     <div id="result-box">
-        <div id="crcl-output" style="font-size: 20px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+        <div id="renal-output" style="font-size: 20px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
         
         <div id="dose-details">
             <span class="dose-heading">Usual Dosage:</span>
@@ -82,42 +82,68 @@ function calculate() {
     const scr = parseFloat(document.getElementById('scr').value);
     const gender = parseFloat(document.getElementById('gender').value);
 
-    if (!age || !weight || !scr) {
+    if (isNaN(age) || isNaN(weight) || isNaN(scr)) {
         alert("Please enter all patient values.");
         return;
     }
 
     // Cockcroft-Gault Equation
-    let crcl = ((140 - age) * weight) / (72 * scr);
-    crcl = crcl * gender;
+    let renalValue = ((140 - age) * weight) / (72 * scr);
+    renalValue = renalValue * gender;
 
     const resultBox = document.getElementById('result-box');
-    const crclOut = document.getElementById('crcl-output');
+    const renalOut = document.getElementById('renal-output');
     const usualDoseOut = document.getElementById('usual-dose-text');
     const specialDoseOut = document.getElementById('special-dose-text');
 
     resultBox.style.display = "block";
-    crclOut.innerText = `Calculated CrCl: ${crcl.toFixed(2)} mL/min`;
-
+    
     let usualText = "";
     let specialText = "";
 
-    if (crcl > 50) {
-        resultBox.className = "normal";
-        usualText = "1g TID (Every 8 hours) OR 500mg QID (Every 6 hours)";
-        specialText = "2g TID (Every 8 hours)";
-    } else if (crcl > 25) {
-        resultBox.className = "warning";
-        usualText = "1g BD (Every 12 hours)";
-        specialText = "2g BD (Every 12 hours)";
-    } else if (crcl >= 10) {
-        resultBox.className = "danger";
-        usualText = "500mg BD (Every 12 hours)";
-        specialText = "1g BD (Every 12 hours)";
-    } else {
-        resultBox.className = "danger";
-        usualText = "500mg OD (Every 24 hours)";
-        specialText = "1g OD (Every 24 hours) OR 500mg BD (Every 12 hours)";
+    // PEDIACTRIC LOGIC (Age <= 18)
+    if (age <= 18) {
+        renalOut.innerText = `Calculated GFR: ${renalValue.toFixed(2)} mL/min`;
+        
+        if (renalValue > 50) {
+            resultBox.className = "normal";
+            usualText = `${(20 * weight).toFixed(0)} mg TID (20mg/kg Every 8h)`;
+            specialText = `${(40 * weight).toFixed(0)} mg TID (40mg/kg Every 8h)`;
+        } else if (renalValue > 25) {
+            resultBox.className = "warning";
+            usualText = `${(20 * weight).toFixed(0)} mg BD (20mg/kg Every 12h)`;
+            specialText = `${(40 * weight).toFixed(0)} mg BD (40mg/kg Every 12h)`;
+        } else if (renalValue >= 10) {
+            resultBox.className = "danger";
+            usualText = `${(10 * weight).toFixed(0)} mg BD (10mg/kg Every 12h)`;
+            specialText = `${(20 * weight).toFixed(0)} mg BD (20mg/kg Every 12h)`;
+        } else {
+            resultBox.className = "danger";
+            usualText = `${(10 * weight).toFixed(0)} mg OD (10mg/kg Every 24h)`;
+            specialText = `${(20 * weight).toFixed(0)} mg OD (20mg/kg Every 24h)`;
+        }
+    } 
+    // ADULT LOGIC (Age > 18)
+    else {
+        renalOut.innerText = `Calculated CrCl: ${renalValue.toFixed(2)} mL/min`;
+        
+        if (renalValue > 50) {
+            resultBox.className = "normal";
+            usualText = "1g TID (Every 8 hours) OR 500mg QID (Every 6 hours)";
+            specialText = "2g TID (Every 8 hours)";
+        } else if (renalValue > 25) {
+            resultBox.className = "warning";
+            usualText = "1g BD (Every 12 hours)";
+            specialText = "2g BD (Every 12 hours)";
+        } else if (renalValue >= 10) {
+            resultBox.className = "danger";
+            usualText = "500mg BD (Every 12 hours)";
+            specialText = "1g BD (Every 12 hours)";
+        } else {
+            resultBox.className = "danger";
+            usualText = "500mg OD (Every 24 hours)";
+            specialText = "1g OD (Every 24 hours) OR 500mg BD (Every 12 hours)";
+        }
     }
 
     usualDoseOut.innerText = usualText;
