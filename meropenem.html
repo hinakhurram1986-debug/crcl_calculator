@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meropenem Dosing - Clinical Tool</title>
+    <style>
+        /* Keeping your original sleek styling */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .back-link { text-decoration: none; color: #1a73e8; font-size: 14px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        h1 { color: #1a73e8; text-align: center; font-size: 22px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #444; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .calc-btn { background: #1a73e8; color: white; }
+        .clear-btn { background: #ea4335; color: white; }
+        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; }
+        .normal { background: #e6f4ea; color: #1e8e3e; border: 1px solid #34a853; }
+        .warning { background: #fef7e0; color: #b06000; border: 1px solid #fbbc04; }
+        .danger { background: #fce8e6; color: #d93025; border: 1px solid #ea4335; }
+        .dose-heading { font-weight: bold; text-decoration: underline; margin-bottom: 5px; display: block; }
+        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <a href="index.html" class="back-link">← Back to Menu</a>
+    <h1>Meropenem Renal Dosing</h1>
+    
+    <label>Age (Years)</label>
+    <input type="number" id="age" placeholder="Enter age">
+
+    <label>Weight (kg)</label>
+    <input type="number" id="weight" placeholder="Enter weight in kg">
+
+    <label>Serum Creatinine (mg/dL)</label>
+    <input type="number" step="0.01" id="scr" placeholder="e.g. 1.1">
+
+    <label>Gender</label>
+    <select id="gender">
+        <option value="1">Male</option>
+        <option value="0.85">Female</option>
+    </select>
+
+    <div class="btn-group">
+        <button class="calc-btn" onclick="calculate()">Calculate</button>
+        <button class="clear-btn" onclick="resetForm()">Clear</button>
+    </div>
+
+    <div id="result-box">
+        <div id="renal-output" style="font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+        <div id="dose-details">
+            <span class="dose-heading">Usual Dosage:</span>
+            <div id="usual-dose-text"></div>
+            <br>
+            <span class="dose-heading">Meningitis/Pulmonary Exacerbation:</span>
+            <div id="special-dose-text"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Made by Clinical Pharmacist Hina Khurram Ghaznavi
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const age = parseFloat(document.getElementById('age').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const scr = parseFloat(document.getElementById('scr').value);
+    const gender = parseFloat(document.getElementById('gender').value);
+
+    if (isNaN(age) || isNaN(weight) || isNaN(scr)) {
+        alert("Please enter all patient values.");
+        return;
+    }
+
+    // Cockcroft-Gault Equation
+    let crcl = ((140 - age) * weight) / (72 * scr) * gender;
+
+    const resultBox = document.getElementById('result-box');
+    const renalOut = document.getElementById('renal-output');
+    const usualDoseOut = document.getElementById('usual-dose-text');
+    const specialDoseOut = document.getElementById('special-dose-text');
+
+    resultBox.style.display = "block";
+    renalOut.innerText = `CrCl: ${crcl.toFixed(2)} mL/min`;
+    
+    let usual = "";
+    let special = "";
+
+    if (age <= 18) {
+        // Pediatric Logic
+        if (crcl > 50) {
+            resultBox.className = "normal";
+            usual = `${(20 * weight).toFixed(0)}mg q8h`;
+            special = `${(40 * weight).toFixed(0)}mg q8h`;
+        } else if (crcl > 25) {
+            resultBox.className = "warning";
+            usual = `${(20 * weight).toFixed(0)}mg q12h`;
+            special = `${(40 * weight).toFixed(0)}mg q12h`;
+        } else {
+            resultBox.className = "danger";
+            usual = `${(10 * weight).toFixed(0)}mg q24h`;
+            special = `${(20 * weight).toFixed(0)}mg q24h`;
+        }
+    } else {
+        // Adult Logic
+        if (crcl > 50) {
+            resultBox.className = "normal";
+            usual = "1g Every 8h";
+            special = "2g Every 8h";
+        } else if (crcl > 25) {
+            resultBox.className = "warning";
+            usual = "1g Every 12h";
+            special = "2g Every 12h";
+        } else if (crcl >= 10) {
+            resultBox.className = "danger";
+            usual = "500mg Every 12h";
+            special = "1g Every 12h";
+        } else {
+            resultBox.className = "danger";
+            usual = "500mg Every 24h";
+            special = "1g Every 24h";
+        }
+    }
+
+    usualDoseOut.innerText = usual;
+    specialDoseOut.innerText = special;
+}
+
+function resetForm() {
+    document.getElementById('age').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('scr').value = '';
+    document.getElementById('result-box').style.display = "none";
+}
+</script>
+</body>
+</html>
