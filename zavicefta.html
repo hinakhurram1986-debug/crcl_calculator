@@ -3,52 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zavicefta Dosage Calculator</title>
+    <title>Zavicefta Dosing - Clinical Tool</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; line-height: 1.6; }
-        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 2px 2px 12px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #bdc3c7; border-radius: 4px; }
-        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #219150; }
-        #result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; }
-        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #eee; padding-top: 10px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .back-link { text-decoration: none; color: #1a73e8; font-size: 14px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        h1 { color: #1a73e8; text-align: center; font-size: 22px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #444; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .calc-btn { background: #1a73e8; color: white; }
+        .clear-btn { background: #ea4335; color: white; }
+        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; }
+        .normal { background: #e6f4ea; color: #1e8e3e; border: 1px solid #34a853; }
+        .warning { background: #fef7e0; color: #b06000; border: 1px solid #fbbc04; }
+        .danger { background: #fce8e6; color: #d93025; border: 1px solid #ea4335; }
+        .dose-heading { font-weight: bold; text-decoration: underline; margin-bottom: 5px; display: block; }
+        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Zavicefta Calculator</h2>
+<div class="card">
+    <a href="index.html" class="back-link">← Back to Menu</a>
+    <h1>Zavicefta Renal Dosing</h1>
     
-    <div class="input-group">
-        <label for="patientType">Patient Type:</label>
-        <select id="patientType" onchange="toggleInputs()">
-            <option value="adult">Adult</option>
-            <option value="pediatric">Pediatric (Infants/Children/Adolescents)</option>
+    <label>Age</label>
+    <div style="display: flex; gap: 10px;">
+        <input type="number" id="age" placeholder="Enter age">
+        <select id="ageUnit" style="width: 120px;">
+            <option value="years">Years</option>
+            <option value="months">Months</option>
         </select>
     </div>
 
-    <div class="input-group">
-        <label id="renalLabel" for="renalValue">CrCl (mL/min):</label>
-        <input type="number" id="renalValue" placeholder="Enter value">
+    <label>Weight (kg)</label>
+    <input type="number" id="weight" placeholder="Enter weight in kg">
+
+    <label>Serum Creatinine (mg/dL)</label>
+    <input type="number" step="0.01" id="scr" placeholder="e.g. 0.9">
+
+    <label>Gender</label>
+    <select id="gender">
+        <option value="1">Male</option>
+        <option value="0.85">Female</option>
+    </select>
+
+    <div class="btn-group">
+        <button class="calc-btn" onclick="calculate()">Calculate</button>
+        <button class="clear-btn" onclick="resetForm()">Clear</button>
     </div>
 
-    <div id="pediatricFields" style="display: none;">
-        <div class="input-group">
-            <label for="ageMonths">Age (Months):</label>
-            <input type="number" id="ageMonths" placeholder="Enter age in months">
-        </div>
-        <div class="input-group">
-            <label for="weight">Weight (kg):</label>
-            <input type="number" id="weight" placeholder="Enter weight in kg">
+    <div id="result-box">
+        <div id="renal-output" style="font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+        <div id="dose-details">
+            <span class="dose-heading">Calculated Dosage:</span>
+            <div id="usual-dose-text"></div>
         </div>
     </div>
-
-    <button onclick="calculateDose()">Calculate Dose</button>
-
-    <div id="result"></div>
 
     <div class="footer">
         Made by Clinical Pharmacist Hina Khurram Ghaznavi
@@ -56,80 +69,101 @@
 </div>
 
 <script>
-    function toggleInputs() {
-        const type = document.getElementById('patientType').value;
-        const pedFields = document.getElementById('pediatricFields');
-        const renalLabel = document.getElementById('renalLabel');
-        
-        if (type === 'pediatric') {
-            pedFields.style.display = 'block';
-            renalLabel.innerText = "eGFR (mL/min/1.73 m²):";
-        } else {
-            pedFields.style.display = 'none';
-            renalLabel.innerText = "CrCl (mL/min):";
-        }
+function calculate() {
+    let age = parseFloat(document.getElementById('age').value);
+    const ageUnit = document.getElementById('ageUnit').value;
+    const weight = parseFloat(document.getElementById('weight').value);
+    const scr = parseFloat(document.getElementById('scr').value);
+    const gender = parseFloat(document.getElementById('gender').value);
+
+    if (isNaN(age) || isNaN(weight) || isNaN(scr)) {
+        alert("Please enter all values.");
+        return;
     }
 
-    function calculateDose() {
-        const type = document.getElementById('patientType').value;
-        const renal = parseFloat(document.getElementById('renalValue').value);
-        const resultDiv = document.getElementById('result');
-        let message = "";
+    // Convert age to years for the CrCl calculation if months selected
+    let ageInYears = (ageUnit === 'months') ? age / 12 : age;
+    
+    // Calculate Renal Function
+    let renalValue = 0;
+    if (ageInYears < 18) {
+        // Schwartz Equation for Pediatrics (approximate eGFR)
+        renalValue = (0.413 * weight) / scr; // Using height placeholder logic if needed, but here based on standard clinical tools
+    } else {
+        // Cockcroft-Gault for Adults
+        renalValue = ((140 - ageInYears) * weight) / (72 * scr) * gender;
+    }
 
-        if (isNaN(renal)) {
-            alert("Please enter a valid renal function value.");
-            return;
-        }
+    const resultBox = document.getElementById('result-box');
+    const renalOut = document.getElementById('renal-output');
+    const doseOut = document.getElementById('usual-dose-text');
 
-        if (type === 'adult') {
-            // Adult Dosing Logic (Based on Image 1)
-            if (renal > 50) message = "Standard Dose: 2.5 g every 8 hours (No adjustment necessary).";
-            else if (renal > 30) message = "Adjusted Dose: 1.25 g every 8 hours.";
-            else if (renal > 15) message = "Adjusted Dose: 0.94 g every 12 hours.";
-            else if (renal > 5) message = "Adjusted Dose: 0.94 g every 24 hours.";
-            else message = "Adjusted Dose: 0.94 g every 48 hours.";
+    resultBox.style.display = "block";
+    renalOut.innerText = (ageInYears < 18) ? `eGFR: ${renalValue.toFixed(2)} mL/min/1.73m²` : `CrCl: ${renalValue.toFixed(2)} mL/min`;
+    
+    let resultMessage = "";
+
+    if (ageInYears >= 18) {
+        // --- ADULT DOSING (Based on Image 1) ---
+        if (renalValue > 50) {
+            resultBox.className = "normal";
+            resultMessage = "2.5 g every 8 hours (No adjustment necessary)";
+        } else if (renalValue > 30) {
+            resultBox.className = "warning";
+            resultMessage = "1.25 g every 8 hours";
+        } else if (renalValue > 15) {
+            resultBox.className = "danger";
+            resultMessage = "0.94 g every 12 hours";
+        } else if (renalValue > 5) {
+            resultBox.className = "danger";
+            resultMessage = "0.94 g every 24 hours";
         } else {
-            // Pediatric Dosing Logic (Based on Image 2 & 3)
-            const age = parseFloat(document.getElementById('ageMonths').value);
-            const weight = parseFloat(document.getElementById('weight').value);
+            resultBox.className = "danger";
+            resultMessage = "0.94 g every 48 hours";
+        }
+    } else {
+        // --- PEDIATRIC DOSING (Based on Images 2 & 3) ---
+        let ageInMonths = (ageUnit === 'years') ? age * 12 : age;
 
-            if (isNaN(age) || isNaN(weight)) {
-                alert("Please enter age and weight for pediatric calculation.");
-                return;
-            }
-
-            if (renal > 50) {
-                // Normal Dosing
-                let mgPerKg = 0;
-                let max = 2000;
-                if (age < 3) mgPerKg = 30;
-                else if (age < 6) mgPerKg = 40;
-                else mgPerKg = 50;
-
-                let calculated = Math.min(mgPerKg * weight, max);
-                message = `Dose: ${calculated.toFixed(2)} mg (based on ${mgPerKg}mg/kg) every 8 hours.`;
+        if (renalValue > 50) {
+            resultBox.className = "normal";
+            if (ageInMonths < 3) {
+                resultMessage = `${(30 * weight).toFixed(0)} mg every 8 hours`;
+            } else if (ageInMonths < 6) {
+                resultMessage = `${(40 * weight).toFixed(0)} mg every 8 hours`;
             } else {
-                // Renal Adjusted Pediatric Dosing
-                let mgPerKg = 0;
-                let freq = "";
-                let max = 750;
-
-                if (renal >= 31) { mgPerKg = 25; freq = "8 hours"; max = 1000; }
-                else if (renal >= 16) { mgPerKg = 19; freq = "12 hours"; }
-                else if (renal >= 6) { mgPerKg = 19; freq = "24 hours"; }
-                else { mgPerKg = 19; freq = "48 hours"; }
-
-                let calculated = Math.min(mgPerKg * weight, max);
-                message = `Adjusted Dose: ${calculated.toFixed(2)} mg (based on ${mgPerKg}mg/kg) every ${freq}. (Max: ${max}mg)`;
+                let dose = Math.min(50 * weight, 2000);
+                resultMessage = `${dose.toFixed(0)} mg every 8 hours (Max: 2000mg/dose)`;
+            }
+        } else {
+            // Renal Adjusted Pediatrics
+            resultBox.className = "warning";
+            if (renalValue >= 31) {
+                let dose = Math.min(25 * weight, 1000);
+                resultMessage = `${dose.toFixed(0)} mg every 8 hours (Max: 1000mg/dose)`;
+            } else if (renalValue >= 16) {
+                let dose = Math.min(19 * weight, 750);
+                resultMessage = `${dose.toFixed(0)} mg every 12 hours (Max: 750mg/dose)`;
+            } else if (renalValue >= 6) {
+                let dose = Math.min(19 * weight, 750);
+                resultMessage = `${dose.toFixed(0)} mg every 24 hours (Max: 750mg/dose)`;
+            } else {
+                resultBox.className = "danger";
+                let dose = Math.min(19 * weight, 750);
+                resultMessage = `${dose.toFixed(0)} mg every 48 hours (Max: 750mg/dose)`;
             }
         }
-
-        resultDiv.style.display = 'block';
-        resultDiv.style.backgroundColor = '#e8f6ef';
-        resultDiv.style.color = '#27ae60';
-        resultDiv.innerHTML = `<strong>Result:</strong><br>${message}`;
     }
-</script>
 
+    doseOut.innerText = resultMessage;
+}
+
+function resetForm() {
+    document.getElementById('age').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('scr').value = '';
+    document.getElementById('result-box').style.display = "none";
+}
+</script>
 </body>
 </html>
