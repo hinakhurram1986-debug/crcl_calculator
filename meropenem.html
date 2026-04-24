@@ -93,19 +93,31 @@ function calculate() {
     let special = "";
 
     if (age <= 18) {
-        // Pediatric Logic
+        // Pediatric Logic with Maximum Dose Caps
         if (crcl > 50) {
             resultBox.className = "normal";
-            usual = `${(20 * weight).toFixed(0)}mg q8h`;
-            special = `${(40 * weight).toFixed(0)}mg q8h`;
+            let uDose = Math.min(20 * weight, 1000);
+            let sDose = Math.min(40 * weight, 2000);
+            usual = `${uDose.toFixed(0)}mg q8h`;
+            special = `${sDose.toFixed(0)}mg q8h`;
         } else if (crcl > 25) {
             resultBox.className = "warning";
-            usual = `${(20 * weight).toFixed(0)}mg q12h`;
-            special = `${(40 * weight).toFixed(0)}mg q12h`;
+            let uDose = Math.min(20 * weight, 1000);
+            let sDose = Math.min(40 * weight, 2000);
+            usual = `${uDose.toFixed(0)}mg q12h`;
+            special = `${sDose.toFixed(0)}mg q12h`;
+        } else if (crcl > 10) {
+            resultBox.className = "danger";
+            let uDose = Math.min(10 * weight, 500);
+            let sDose = Math.min(20 * weight, 1000);
+            usual = `${uDose.toFixed(0)}mg q24h`;
+            special = `${sDose.toFixed(0)}mg q24h`;
         } else {
             resultBox.className = "danger";
-            usual = `${(10 * weight).toFixed(0)}mg q24h`;
-            special = `${(20 * weight).toFixed(0)}mg q24h`;
+            let uDose = Math.min(10 * weight, 500);
+            let sDose = Math.min(20 * weight, 1000);
+            usual = `${uDose.toFixed(0)}mg q24h`;
+            special = `${sDose.toFixed(0)}mg q24h`;
         }
     } else {
         // Adult Logic
