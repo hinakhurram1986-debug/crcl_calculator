@@ -5,34 +5,34 @@
 (function() {
     // --- CONFIGURATION ---
     const correctPassword = "cp123"; // Set your password here
-    const siteName = "Creatinine Clearance Calculator";
+    const siteName = "Creatinine Clearance Calculator"; // Name displayed in prompt
     // ---------------------
 
     const storageKey = "auth_token_" + btoa(siteName);
-    
+
     function loadAccess() {
         const isAuthorized = localStorage.getItem(storageKey);
-        
+
         if (isAuthorized !== "true") {
             // Hide the actual content until authorized
             document.documentElement.style.display = 'none';
-            
+
             const userEntry = prompt(`Enter Password for ${siteName}:`);
-            
+
             if (userEntry === correctPassword) {
                 localStorage.setItem(storageKey, "true");
                 document.documentElement.style.display = 'block';
                 location.reload(); // Refresh to show content
             } else {
                 alert("Incorrect password. Access denied.");
-                document.body.innerHTML = "<h1>Unauthorized Access</h1>";
+                document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px; font-family:sans-serif;'>Unauthorized Access</h1>";
                 document.documentElement.style.display = 'block';
                 window.stop();
             }
         }
     }
 
-    // Run the check
+    // Run the check immediately
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", loadAccess);
     } else {
@@ -40,37 +40,76 @@
     }
 })();
 </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Dosage Dashboard</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .container { max-width: 800px; width: 100%; text-align: center; }
-        h1 { color: #1a73e8; margin-bottom: 10px; }
-        p { color: #555; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .drug-card { 
-            background: white; padding: 20px; border-radius: 12px; text-decoration: none; 
-            color: #1a73e8; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #e0e0e0;
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #f0f2f5; 
         }
-        .drug-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); background: #f8fbff; }
-        .footer { margin-top: 50px; font-size: 13px; color: #777; border-top: 1px solid #ddd; padding-top: 20px; width: 100%; }
+        .hub-container { 
+            max-width: 400px; 
+            width: 90%; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 10px; }
+        p { color: #7f8c8d; margin-bottom: 30px; }
+        
+        .menu-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .drug-link { 
+            display: block; 
+            text-decoration: none; 
+            padding: 15px; 
+            background-color: #ffffff; 
+            color: #27ae60; 
+            border: 2px solid #27ae60; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            transition: all 0.3s ease; 
+        }
+        
+        .drug-link:hover { 
+            background-color: #27ae60; 
+            color: white; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.2);
+        }
+
+        .footer { 
+            margin-top: 40px; 
+            font-size: 12px; 
+            color: #bdc3c7; 
+            border-top: 1px solid #eee; 
+            padding-top: 15px; 
+        }
+        .signature { font-weight: bold; color: #34495e; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Clinical Pharmacy Calculators</h1>
-    <p>Select a medication to calculate renal-adjusted dosages.</p>
+<div class="hub-container">
+    <h1>Clinical Calculators</h1>
+    <p>Select a drug to calculate the dosage</p>
 
-    <div class="grid">
-        <a href="meropenem.html" class="drug-card">Meropenem</a>
-            </div>
+    <div class="menu-list">
+        <a href="meropenem.html" class="drug-link">Meropenem</a>
+        
+        <a href="zavicefta.html" class="drug-link">Zavicefta (Ceftazidime/Avibactam)</a>
+    </div>
 
     <div class="footer">
-        Made by Clinical Pharmacist Hina Khurram Ghaznavi<br>
-        <em>Internal Use Only - Based on UpToDate Guidelines</em>
+        Clinical Decision Support Tool<br>
+        Developed by <span class="signature">Clinical Pharmacist Hina Khurram Ghaznavi</span>
     </div>
 </div>
 
