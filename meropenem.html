@@ -78,7 +78,7 @@ function calculate() {
         return;
     }
 
-    // Cockcroft-Gault Equation
+    // Cockcroft-Gault E/uation
     let crcl = ((140 - age) * weight) / (72 * scr) * gender;
 
     const resultBox = document.getElementById('result-box');
@@ -98,26 +98,26 @@ function calculate() {
             resultBox.className = "normal";
             let uDose = Math.min(20 * weight, 1000);
             let sDose = Math.min(40 * weight, 2000);
-            usual = `${uDose.toFixed(0)}mg q8h`;
-            special = `${sDose.toFixed(0)}mg q8h`;
+            usual = `${uDose.toFixed(0)}mg /8h`;
+            special = `${sDose.toFixed(0)}mg /8h`;
         } else if (crcl > 25) {
             resultBox.className = "warning";
             let uDose = Math.min(20 * weight, 1000);
             let sDose = Math.min(40 * weight, 2000);
-            usual = `${uDose.toFixed(0)}mg q12h`;
-            special = `${sDose.toFixed(0)}mg q12h`;
+            usual = `${uDose.toFixed(0)}mg /12h`;
+            special = `${sDose.toFixed(0)}mg /12h`;
         } else if (crcl > 10) {
             resultBox.className = "danger";
             let uDose = Math.min(10 * weight, 500);
             let sDose = Math.min(20 * weight, 1000);
-            usual = `${uDose.toFixed(0)}mg q24h`;
-            special = `${sDose.toFixed(0)}mg q24h`;
+            usual = `${uDose.toFixed(0)}mg /24h`;
+            special = `${sDose.toFixed(0)}mg /24h`;
         } else {
             resultBox.className = "danger";
             let uDose = Math.min(10 * weight, 500);
             let sDose = Math.min(20 * weight, 1000);
-            usual = `${uDose.toFixed(0)}mg q24h`;
-            special = `${sDose.toFixed(0)}mg q24h`;
+            usual = `${uDose.toFixed(0)}mg /24h`;
+            special = `${sDose.toFixed(0)}mg /24h`;
         }
     } else {
         // Adult Logic
