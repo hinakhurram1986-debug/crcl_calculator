@@ -96,20 +96,20 @@ function calculate() {
         // Pediatric Logic with Bracketed Max Dosage
         if (crcl > 50) {
             resultBox.className = "normal";
-            usual = `${(20 * weight).toFixed(0)}mg /8h (Max: 1000mg)`;
-            special = `${(40 * weight).toFixed(0)}mg /8h (Max: 2000mg)`;
+            usual = `${(20 * weight).toFixed(0)}mg /8h (Max: 1000mg/dose)`;
+            special = `${(40 * weight).toFixed(0)}mg /8h (Max: 2000mg/dose)`;
         } else if (crcl > 25) {
             resultBox.className = "warning";
-            usual = `${(20 * weight).toFixed(0)}mg /12h (Max: 1000mg)`;
-            special = `${(40 * weight).toFixed(0)}mg /12h (Max: 2000mg)`;
+            usual = `${(20 * weight).toFixed(0)}mg /12h (Max: 1000mg/dose)`;
+            special = `${(40 * weight).toFixed(0)}mg /12h (Max: 2000mg/dose)`;
         } else if (crcl > 10) {
             resultBox.className = "danger";
-            usual = `${(10 * weight).toFixed(0)}mg /24h (Max: 500mg)`;
-            special = `${(20 * weight).toFixed(0)}mg /24h (Max: 1000mg)`;
+            usual = `${(10 * weight).toFixed(0)}mg /24h (Max: 500mg/dose)`;
+            special = `${(20 * weight).toFixed(0)}mg /24h (Max: 1000mg/dose)`;
         } else {
             resultBox.className = "danger";
-            usual = `${(10 * weight).toFixed(0)}mg /24h (Max: 500mg)`;
-            special = `${(20 * weight).toFixed(0)}mg /24h (Max: 1000mg)`;
+            usual = `${(10 * weight).toFixed(0)}mg /24h (Max: 500mg/dose)`;
+            special = `${(20 * weight).toFixed(0)}mg /24h (Max: 1000mg/dose)`;
         }
     } else {
         // Adult Logic
