@@ -3,34 +3,40 @@
 <head>
     <script>
 (function() {
-    // 1. Define your authorized fingerprints
-    // Add the fingerprints of your 2-3 authorized systems here
-    const authorizedFingerprints = ["PASTE_FINGERPRINT_1", "PASTE_FINGERPRINT_2"];
+    // --- CONFIGURATION ---
+    const correctPassword = "YourCustomPassword123"; // Set your password here
+    const siteName = "Creatinine Calculator";
+    // ---------------------
+
+    const storageKey = "auth_token_" + btoa(siteName);
     
-    // 2. Simple Fingerprinting Function
-    function generateFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const txt = 'Clinical-Calc-Auth';
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
-        ctx.fillText(txt, 2, 2);
-        return btoa(canvas.toDataURL()); // Converts canvas data to a unique string
+    function loadAccess() {
+        const isAuthorized = localStorage.getItem(storageKey);
+        
+        if (isAuthorized !== "true") {
+            // Hide the actual content until authorized
+            document.documentElement.style.display = 'none';
+            
+            const userEntry = prompt(`Enter Password for ${siteName}:`);
+            
+            if (userEntry === correctPassword) {
+                localStorage.setItem(storageKey, "true");
+                document.documentElement.style.display = 'block';
+                location.reload(); // Refresh to show content
+            } else {
+                alert("Incorrect password. Access denied.");
+                document.body.innerHTML = "<h1>Unauthorized Access</h1>";
+                document.documentElement.style.display = 'block';
+                window.stop();
+            }
+        }
     }
 
-    const systemFingerprint = generateFingerprint();
-    const accessKey = localStorage.getItem('calc_access_token');
-
-    // 3. Authorization Check
-    // System is authorized if the fingerprint matches AND the local key is present
-    if (!authorizedFingerprints.includes(systemFingerprint) || accessKey !== "AUTHORIZED_LEVEL_1") {
-        document.body.innerHTML = `
-            <div style="text-align:center; margin-top:100px; font-family:sans-serif;">
-                <h2>Access Denied</h2>
-                <p>This system is not authorized to use this clinical tool.</p>
-                <p style="color:gray; font-size:10px;">ID: ${systemFingerprint}</p>
-            </div>`;
-        window.stop(); // Stops further execution
+    // Run the check
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadAccess);
+    } else {
+        loadAccess();
     }
 })();
 </script>
