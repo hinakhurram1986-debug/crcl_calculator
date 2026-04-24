@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+(function() {
+    // 1. Define your authorized fingerprints
+    // Add the fingerprints of your 2-3 authorized systems here
+    const authorizedFingerprints = ["PASTE_FINGERPRINT_1", "PASTE_FINGERPRINT_2"];
+    
+    // 2. Simple Fingerprinting Function
+    function generateFingerprint() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const txt = 'Clinical-Calc-Auth';
+        ctx.textBaseline = "top";
+        ctx.font = "14px 'Arial'";
+        ctx.fillText(txt, 2, 2);
+        return btoa(canvas.toDataURL()); // Converts canvas data to a unique string
+    }
+
+    const systemFingerprint = generateFingerprint();
+    const accessKey = localStorage.getItem('calc_access_token');
+
+    // 3. Authorization Check
+    // System is authorized if the fingerprint matches AND the local key is present
+    if (!authorizedFingerprints.includes(systemFingerprint) || accessKey !== "AUTHORIZED_LEVEL_1") {
+        document.body.innerHTML = `
+            <div style="text-align:center; margin-top:100px; font-family:sans-serif;">
+                <h2>Access Denied</h2>
+                <p>This system is not authorized to use this clinical tool.</p>
+                <p style="color:gray; font-size:10px;">ID: ${systemFingerprint}</p>
+            </div>`;
+        window.stop(); // Stops further execution
+    }
+})();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clinical Dosage Dashboard</title>
