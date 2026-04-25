@@ -5,80 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zavicefta Dosing - Clinical Tool</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        .back-link { text-decoration: none; color: #1a73e8; font-size: 14px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
-        h1 { color: #1a73e8; text-align: center; font-size: 22px; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: 600; color: #444; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .btn-group { margin-top: 30px; display: flex; gap: 15px; }
-        button { flex: 1; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; overflow: hidden; }
+        
+        /* Blue Header Block */
+        .header-block { background: #1a73e8; color: white; padding: 20px; text-align: center; position: relative; }
+        .back-link { position: absolute; left: 15px; top: 20px; text-decoration: none; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: bold; }
+        h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
+
+        /* Minimized Form Layout */
+        .content { padding: 20px; }
+        .input-section { background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; }
+        label { display: block; margin-top: 10px; font-weight: 600; color: #555; font-size: 13px; }
+        input, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        .btn-group { margin-top: 20px; display: flex; gap: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: opacity 0.2s; }
         .calc-btn { background: #1a73e8; color: white; }
-        .clear-btn { background: #ea4335; color: white; }
-        #result-box { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; }
-        .normal { background: #e6f4ea; color: #1e8e3e; border: 1px solid #34a853; }
-        .warning { background: #fef7e0; color: #b06000; border: 1px solid #fbbc04; }
-        .danger { background: #fce8e6; color: #d93025; border: 1px solid #ea4335; }
-        .dose-heading { font-weight: bold; text-decoration: underline; margin-bottom: 5px; display: block; }
-        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+        .clear-btn { background: #6c757d; color: white; opacity: 0.8; }
+        button:hover { opacity: 0.9; }
+
+        /* Enlarged Result Area */
+        #result-box { margin-top: 20px; padding: 25px; border-radius: 12px; display: none; text-align: center; }
+        #renal-output { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        #usual-dose-text { font-size: 26px; font-weight: 900; line-height: 1.2; margin: 10px 0; }
+        .dose-heading { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: block; margin-bottom: 5px; }
+        
+        .info-grid { font-size: 13px; text-align: left; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); line-height: 1.6; }
+
+        .normal { background: #e6f4ea; color: #1e7e34; border: 2px solid #34a853; }
+        .warning { background: #fff4e5; color: #856404; border: 2px solid #ffc107; }
+        .danger { background: #fdf2f2; color: #a94442; border: 2px solid #d93025; }
+
+        .footer { margin-top: 20px; text-align: center; font-size: 11px; color: #888; line-height: 1.4; padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <a href="index.html" class="back-link">← Back to Menu</a>
-    <h1>Zavicefta Renal Dosing</h1>
-    
-    <label>Age</label>
-    <div style="display: flex; gap: 10px;">
-        <input type="number" id="age" placeholder="Enter age">
-        <select id="ageUnit" style="width: 120px;">
-            <option value="years">Years</option>
-            <option value="months">Months</option>
-        </select>
+    <div class="header-block">
+        <a href="index.html" class="back-link">← BACK</a>
+        <h1>Zavicefta Renal Dosing</h1>
     </div>
 
-    <label>Weight (kg)</label>
-    <input type="number" id="weight" placeholder="Enter weight in kg">
+    <div class="content">
+        <div class="input-section">
+            <label>Age</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="number" id="age" placeholder="Age">
+                <select id="ageUnit" style="width: 110px;">
+                    <option value="years">Years</option>
+                    <option value="months">Months</option>
+                </select>
+            </div>
 
-    <label>Serum Creatinine (mg/dL)</label>
-    <input type="number" step="0.01" id="scr" placeholder="e.g. 0.9">
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="kg">
+                </div>
+                <div style="flex: 1;">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="1">Male</option>
+                        <option value="0.85">Female</option>
+                    </select>
+                </div>
+            </div>
 
-    <label>Gender</label>
-    <select id="gender">
-        <option value="1">Male</option>
-        <option value="0.85">Female</option>
-    </select>
+            <label>Serum Creatinine (mg/dL)</label>
+            <input type="number" step="0.01" id="scr" placeholder="e.g. 0.9">
+        </div>
 
-    <div class="btn-group">
-        <button class="calc-btn" onclick="calculate()">Calculate</button>
-        <button class="clear-btn" onclick="resetForm()">Clear</button>
-    </div>
+        <div class="btn-group">
+            <button class="calc-btn" onclick="calculate()">Calculate Dose</button>
+            <button class="clear-btn" onclick="resetForm()">Clear</button>
+        </div>
 
-    <div id="result-box">
-        <div id="renal-output" style="font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
-        <div id="dose-details">
-            <span class="dose-heading">Calculated Dosage:</span>
+        <div id="result-box">
+            <div id="renal-output"></div>
+            <span class="dose-heading">Recommended Dosage</span>
             <div id="usual-dose-text"></div>
             
+            <div class="info-grid">
+                <strong>Dialyzable:</strong> 57% (Administer after Dialysis)<br>
+                <strong>Infusion Time:</strong> Over 2 Hours<br>
+                <strong>Stability:</strong> 24 Hours at 2 - 8°C (Reconstituted)<br>
+                <strong>Monitoring:</strong> Prophylaxis (1st dose) & Renal Function
+            </div>
         </div>
-        <p>
-   
-                Dialyzable = 57% (Administer after Dialysis)<br>
-                Infuse Over = 2 Hours<br>
-                Stability = Reconstituted Solution = 24 Hours at 2 - 8°C<br>
-                Monitoring = 1. Sign of prophylaxis during first dose<br>
-                             2. Renal function
-                             
-          
-        </p>
-    </div>
 
-    <div class="footer">
-        Made by Clinical Pharmacist Hina Khurram Ghaznavi<br>
-        CrCl value calculated through Cockcroft-Gault Equation<br>
-        eGFR calculated through CKD-EPI Formula<br>
-        Reference of dosage = UpToDate by Wolter's Kluwer<br>
+        <div class="footer">
+            <strong>Made by Clinical Pharmacist Hina Khurram Ghaznavi</strong><br>
+            Cockcroft-Gault (Adults) • Schwartz/CKD-EPI (Peds)<br>
+            Reference: UpToDate by Wolters Kluwer
+        </div>
     </div>
 </div>
 
@@ -95,16 +116,12 @@ function calculate() {
         return;
     }
 
-    // Convert age to years for the CrCl calculation if months selected
     let ageInYears = (ageUnit === 'months') ? age / 12 : age;
-    
-    // Calculate Renal Function
     let renalValue = 0;
+    
     if (ageInYears < 18) {
-        // Schwartz Equation for Pediatrics (approximate eGFR)
-        renalValue = (0.413 * weight) / scr; // Using height placeholder logic if needed, but here based on standard clinical tools
+        renalValue = (0.413 * weight) / scr; 
     } else {
-        // Cockcroft-Gault for Adults
         renalValue = ((140 - ageInYears) * weight) / (72 * scr) * gender;
     }
 
@@ -113,15 +130,14 @@ function calculate() {
     const doseOut = document.getElementById('usual-dose-text');
 
     resultBox.style.display = "block";
-    renalOut.innerText = (ageInYears < 18) ? `eGFR: ${renalValue.toFixed(2)} mL/min/1.73m²` : `CrCl: ${renalValue.toFixed(2)} mL/min`;
+    renalOut.innerText = (ageInYears < 18) ? `eGFR: ${renalValue.toFixed(1)}` : `CrCl: ${renalValue.toFixed(1)} mL/min`;
     
     let resultMessage = "";
 
     if (ageInYears >= 18) {
-        // --- ADULT DOSING (Based on Image 1) ---
         if (renalValue > 50) {
             resultBox.className = "normal";
-            resultMessage = "2.5 g every 8 hours (No adjustment necessary)";
+            resultMessage = "2.5 g every 8 hours";
         } else if (renalValue > 30) {
             resultBox.className = "warning";
             resultMessage = "1.25 g every 8 hours";
@@ -136,39 +152,35 @@ function calculate() {
             resultMessage = "0.94 g every 48 hours";
         }
     } else {
-        // --- PEDIATRIC DOSING (Based on Images 2 & 3) ---
         let ageInMonths = (ageUnit === 'years') ? age * 12 : age;
-
         if (renalValue > 50) {
             resultBox.className = "normal";
             if (ageInMonths < 3) {
-                resultMessage = `${(30 * weight).toFixed(0)} mg every 8 hours`;
+                resultMessage = `${(30 * weight).toFixed(0)} mg every 8h`;
             } else if (ageInMonths < 6) {
-                resultMessage = `${(40 * weight).toFixed(0)} mg every 8 hours`;
+                resultMessage = `${(40 * weight).toFixed(0)} mg every 8h`;
             } else {
                 let dose = Math.min(50 * weight, 2000);
-                resultMessage = `${dose.toFixed(0)} mg every 8 hours (Max: 2000mg/dose)`;
+                resultMessage = `${dose.toFixed(0)} mg every 8h`;
             }
         } else {
-            // Renal Adjusted Pediatrics
             resultBox.className = "warning";
             if (renalValue >= 31) {
                 let dose = Math.min(25 * weight, 1000);
-                resultMessage = `${dose.toFixed(0)} mg every 8 hours (Max: 1000mg/dose)`;
+                resultMessage = `${dose.toFixed(0)} mg every 8h`;
             } else if (renalValue >= 16) {
                 let dose = Math.min(19 * weight, 750);
-                resultMessage = `${dose.toFixed(0)} mg every 12 hours (Max: 750mg/dose)`;
+                resultMessage = `${dose.toFixed(0)} mg every 12h`;
             } else if (renalValue >= 6) {
                 let dose = Math.min(19 * weight, 750);
-                resultMessage = `${dose.toFixed(0)} mg every 24 hours (Max: 750mg/dose)`;
+                resultMessage = `${dose.toFixed(0)} mg every 24h`;
             } else {
                 resultBox.className = "danger";
                 let dose = Math.min(19 * weight, 750);
-                resultMessage = `${dose.toFixed(0)} mg every 48 hours (Max: 750mg/dose)`;
+                resultMessage = `${dose.toFixed(0)} mg every 48h`;
             }
         }
     }
-
     doseOut.innerText = resultMessage;
 }
 
